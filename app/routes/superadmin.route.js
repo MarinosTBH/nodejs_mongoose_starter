@@ -1,7 +1,7 @@
 
 const express = require('express');
 const router = express.Router();
-const superAdminController = require('../controllers/superadmin.controller.js');
+const superAdminController = require('../controllers/superadmin.controller');
 
 // Routes
 router.post('/superadmins', superAdminController.createSuperAdmin);
