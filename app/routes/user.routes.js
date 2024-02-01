@@ -1,5 +1,5 @@
 const express = require("express");
-const app = express.app();
+const app = express();
 const users = require('../controllers/user.controller');
 app.post('/users', users.create);
 app.get('/users', users.findAll);
