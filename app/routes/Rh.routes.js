@@ -1,18 +1,9 @@
-module.exports = (app) => {
-    const Rhs = require('../controllers/Rh.controller.js');
-
-
-    app.post('/Rh', Rhs.create);
-
-    
-    app.get('/Rhs', Rhs.findAll);
-
-   
-    app.get('/Rhs/:RhId', Rhs.findOne);
-
-    
-    app.put('/Rhs/:RhId', Rhs.update);
-
-    
-    app.delete('/Rhs/:RhId', Rhs.delete);
-}
+const express = require("express");
+const router = express.Router();
+const Rhs = require('../controllers/Rh.controller');
+router.post('/rh', Rhs.create);
+router.get('/rhs', Rhs.findAll);
+router.get('/rhs/:RhId', Rhs.findOne);
+router.put('/rhs/:RhId', Rhs.update);
+router.delete('/rhs/:RhId', Rhs.delete);
+module.exports = router;

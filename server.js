@@ -3,19 +3,16 @@ var cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 
-
-// create express app
-const app = express();
-app.use(cors())
-
 // Load environment variables from a database.config file
 dotenv.config();
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }))
+// create express app
+const app = express();
+app.use(cors());
 
-// parse application/json
-app.use(bodyParser.json())
+// Body Parser Middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // Configuring the database
 const dbConfig = require('./config/databaseConfig.js');
@@ -39,16 +36,63 @@ app.get('/', (req, res) => {
 });
 
 
-// routes
-app.use('/api', superadmin.route);
-app.use('/api', conge.routes);
-app.use('/api', Rh.routes);
-app.use('/api', user.routes);
-app.use('/api', employe.routes);
+
+// Import Routes 
+const superadminRouter = require('./app/routes/superadmin.route');
+const congeRouter = require('./app/routes/conge.routes');
+const employeRouter = require('./app/routes/employe.routes');
+const userRouter = require('./app/routes/user.routes');
+const rhRouter = require('./app/routes/rh.routes');
 
 
+// Importing DotEnv and config
+require('dotenv').config()
 
-// listen for requests
-app.listen(3000,   () => {
-    console.log("Server is listening on port 3000");
+
+// Initialize PORT 
+const port = process.env.PORT || 3000;
+
+// Routes
+app.get("/", async (req, res) => {
+    return res.json({ message: "Hello, World ✌️" });
 });
+
+// Routes Middlewares
+app.use('/api/superadmins', superadminRouter);
+app.use('/api/conges', congeRouter);
+app.use('/api/employes', employeRouter);
+app.use('/api/users', userRouter);
+app.use('/api/rh', rhRouter);
+
+
+// Try to Start the Server
+const start = async () => {
+    try {
+      app.listen(port, () => console.log(`Server started on port ${port}`));
+    } catch (error) {
+      console.error(error);
+      process.exit(1);
+    }
+};
+
+// Try to coonect To DB
+const connectDB = async () => {
+    try {
+        await mongoose.set("strictQuery", false);
+        await mongoose.connect(process.env.url);
+        console.log("Connected To DB!");
+    }catch(error){
+        console.error(error);
+        process.exit(1);
+    }
+}
+  
+
+// Calling Func
+start();
+connectDB();
+
+
+
+
+
