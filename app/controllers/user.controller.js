@@ -1,128 +1,68 @@
-const User = require('../models/user.model');
+const UserModel = require('../models/user.model.js');
 
-// Create and Save a new user
-exports.create = (req, res) => {
-    // Validate request
-    if(!req.body.username) {
-        return res.status(400).send({
-            message: "user content can not be empty"
-        });
+
+//asynchandlers
+// Controller functions
+const createUser = async (req, res) => {
+  try {
+    const { Nom, Prenom, username,role, email,password , number ,adresse } = req.body;
+    const user = new UserModel({ Nom, Prenom, username,role, email,password , number ,adresse });
+    const savedUser = await user.save();
+    return res.json(savedUser);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await UserModel.find({});
+    return res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getUserById = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-
-    // Create a user
-    const user = new User({
-        Nom:req.body.Nom,
-        Prenom:req.body.Prenom,
-        username: req.body.username || "Untitled User", 
-        role:req.body.role,
-        email : req.body.email,
-        password: req.body.password,
-        number: req.body.number,
-        adress : req.body.adress
-    });
-
-    // Save user in the database
-    user.save()
-    .then(data => {
-        res.send(data);
-    }).catch(err => {
-        res.status(500).send({
-            message: err.message || "Some error occurred while creating the user."
-        });
-    });
+    return res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-// Retrieve and return all user from the database.
-exports.findAll = (req, res) => {
-    User.find()
-    .then(users => {
-        res.send(users);
-    }).catch(err => {
-        res.status(500).send({
-            message: err.message || "Some error occurred while retrieving users."
-        });
-    });
-};
-
-// Find a single user with a userId
-exports.findOne = (req, res) => {
-    User.findById(req.params.userId)
-    .then(user => {
-        if(!user) {
-            return res.status(404).send({
-                message: "user not found with id " + req.params.userId
-            });            
-        }
-        res.send(user);
-    }).catch(err => {
-        if(err.kind === 'ObjectId') {
-            return res.status(404).send({
-                message: "user not found with id " + req.params.userId
-            });                
-        }
-        return res.status(500).send({
-            message: "Error retrieving user with id " + req.params.userId
-        });
-    });
-};
-
-// Update a user identified by the userId in the request
-exports.update = (req, res) => {
-    // Validate Request
-    if(!req.body.username) {
-        return res.status(400).send({
-            message: "user content can not be empty"
-        });
+const updateUserById = async (req, res) => {
+  try {
+    const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-
-    // Find user and update it with the request body
-    User.findByIdAndUpdate(req.params.userId, {
-        Nom:req.body.Nom,
-        Prenom:req.body.Prenom,
-        username: req.body.username || "Untitled User", 
-        role:req.body.role,
-        email : req.body.email,
-        password: req.body.password,
-        number: req.body.number,
-        adress : req.body.adress
-    }, {new: true})
-    .then(user => {
-        if(!user) {
-            return res.status(404).send({
-                message: "user not found with id " + req.params.userId
-            });
-        }
-        res.send(user);
-    }).catch(err => {
-        if(err.kind === 'ObjectId') {
-            return res.status(404).send({
-                message: "user not found with id " + req.params.userId
-            });                
-        }
-        return res.status(500).send({
-            message: "Error updating user with id " + req.params.userId
-        });
-    });
+    return res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-// Delete a user with the specified userId in the request
-exports.delete = (req, res) => {
-    User.findByIdAndRemove(req.params.userId)
-    .then(user => {
-        if(!user) {
-            return res.status(404).send({
-                message: "user not found with id " + req.params.userId
-            });
-        }
-        res.send({message: "user deleted successfully!"});
-    }).catch(err => {
-        if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).send({
-                message: "user not found with id " + req.params.userId
-            });                
-        }
-        return res.status(500).send({
-            message: "Could not delete user with id " + req.params.userId
-        });
-    });
+const deleteUserById = async (req, res) => {
+  try {
+    const user = await UserModel.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    return res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUserById,
+  deleteUserById,
 };

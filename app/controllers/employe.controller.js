@@ -1,116 +1,117 @@
-const employee = require('../models/employe.model.js');
+const Employee = require('../models/employe.model.js');
 
 // Create and Save a new employee
-exports.create = (req, res) => {
+const createEmployee = async (req, res) => {
     // Validate request
-    if(!req.body.username) {
+    if (!req.body.username) {
         return res.status(400).send({
-            message: "user content can not be empty"
+            message: "username cannot be empty"
         });
     }
 
-    // Create a employe
-    const user = new employee({
-        specialite:req.body.specialite,
-        projet:req.body.projet,
-    });
-
-    // Save employee in the database
-    user.save()
-    .then(data => {
-        res.send(data);
-    }).catch(err => {
-        res.status(500).send({
-            message: err.message || "Some error occurred while creating the employee."
+    try {
+        // Create an employee
+        const newEmployee = new Employee({
+            specialite: req.body.specialite,
+            projet: req.body.projet,
         });
-    });
+
+        // Save employee in the database
+        const savedEmployee = await newEmployee.save();
+        res.send(savedEmployee);
+    } catch (error) {
+        res.status(500).send({
+            message: error.message || "Some error occurred while creating the employee."
+        });
+    }
 };
 
 // Retrieve and return all employees from the database.
-exports.findAll = (req, res) => {
-    employee.find()
-    .then(employees => {
+const getAllEmployees = async (req, res) => {
+    try {
+        const employees = await Employee.find();
         res.send(employees);
-    }).catch(err => {
+    } catch (error) {
         res.status(500).send({
-            message: err.message || "Some error occurred while retrieving employees."
+            message: error.message || "Some error occurred while retrieving employees."
         });
-    });
+    }
 };
 
 // Find a single employee with a employeeId
-exports.findOne = (req, res) => {
-    employee.findById(req.params.employeeId)
-    .then(employee => {
-        if(!employee) {
+const getEmployeeById = async (req, res) => {
+    try {
+        const employee = await Employee.findById(req.params.employeeId);
+        if (!employee) {
             return res.status(404).send({
-                message: "employee not found with id " + req.params.employeeId
-            });            
-        }
-        res.send(employee);
-    }).catch(err => {
-        if(err.kind === 'ObjectId') {
-            return res.status(404).send({
-                message: "employee not found with id " + req.params.employeeId
-            });                
-        }
-        return res.status(500).send({
-            message: "Error retrieving user with id " + req.params.employeeId
-        });
-    });
-};
-
-// Update a employee identified by the employee Id in the request
-exports.update = (req, res) => {
-    // Validate Request
-    if(!req.body.username) {
-        return res.status(400).send({
-            message: "employee content can not be empty"
-        });
-    }
-
-    // Find employee and update it with the request body
-    employee.findByIdAndUpdate(req.params.employeId, {
-        specialite:req.body.specialite,
-        projet:req.body.projet,
-    }, {new: true})
-    .then(employee => {
-        if(!employee) {
-            return res.status(404).send({
-                message: "employee not found with id " + req.params.employeeId
+                message: "Employee not found with id " + req.params.employeeId
             });
         }
         res.send(employee);
-    }).catch(err => {
-        if(err.kind === 'ObjectId') {
+    } catch (error) {
+        if (error.kind === 'ObjectId') {
             return res.status(404).send({
-                message: "employee not found with id " + req.params.employeeId
-            });                
+                message: "Employee not found with id " + req.params.employeeId
+            });
+        }
+        return res.status(500).send({
+            message: "Error retrieving employee with id " + req.params.employeeId
+        });
+    }
+};
+
+// Update a employee identified by the employee Id in the request
+const updateEmployeeById = async (req, res) => {
+    // Validate Request
+    if (!req.body.username) {
+        return res.status(400).send({
+            message: "username cannot be empty"
+        });
+    }
+
+    try {
+        // Find employee and update it with the request body
+        const updatedEmployee = await Employee.findByIdAndUpdate(req.params.employeeId, {
+            specialite: req.body.specialite,
+            projet: req.body.projet,
+        }, { new: true });
+        if (!updatedEmployee) {
+            return res.status(404).send({
+                message: "Employee not found with id " + req.params.employeeId
+            });
+        }
+        res.send(updatedEmployee);
+    } catch (error) {
+        if (error.kind === 'ObjectId') {
+            return res.status(404).send({
+                message: "Employee not found with id " + req.params.employeeId
+            });
         }
         return res.status(500).send({
             message: "Error updating employee with id " + req.params.employeeId
         });
-    });
+    }
 };
 
 // Delete a user with the specified userId in the request
-exports.delete = (req, res) => {
-    User.findByIdAndRemove(req.params.userId)
-    .then(user => {
-        if(!user) {
+const deleteEmployeeById = async (req, res) => {
+    try {
+        const deletedEmployee = await Employee.findByIdAndRemove(req.params.employeeId);
+        if (!deletedEmployee) {
             return res.status(404).send({
-                message: "user not found with id " + req.params.userId
+                message: "Employee not found with id " + req.params.employeeId
             });
         }
-        res.send({message: "user deleted successfully!"});
-    }).catch(err => {
-        if(err.kind === 'ObjectId' || err.name === 'NotFound') {
+        res.send({ message: "Employee deleted successfully!" });
+    } catch (error) {
+        if (error.kind === 'ObjectId' || error.name === 'NotFound') {
             return res.status(404).send({
-                message: "user not found with id " + req.params.userId
-            });                
+                message: "Employee not found with id " + req.params.employeeId
+            });
         }
         return res.status(500).send({
-            message: "Could not delete user with id " + req.params.userId
+            message: "Could not delete employee with id " + req.params.employeeId
         });
-    });
+    }
 };
+module.exports = {createEmployee,getAllEmployees,getEmployeeById,updateEmployeeById,deleteEmployeeById};

@@ -11,5 +11,5 @@ const userSchema = new mongoose.Schema({
         number: { type: String },
         adresse: { type: String },
       },{timestamps:true});
-
-module.exports = mongoose.model('User', userSchema);
+const UserModel = mongoose.model('user', userSchema);
+module.exports = UserModel;
