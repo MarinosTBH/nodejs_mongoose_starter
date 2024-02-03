@@ -28,9 +28,7 @@ console.log(port);
 
 // Route initial check
 app.get("/", async (req, res) => {
-  return res.json({ message: "Hello, World ✌️" }).then(() => {
-    console.log("Check OK");
-  });
+  return res.json({ message: "Hello, World ✌️" })
 });
 
 // Import Routes
@@ -43,9 +41,9 @@ const rhRouter = require("./app/routes/Rh.routes");
 // Routes Middlewares
 app.use("/api/superadmins", superadminRouter);
 app.use("/api/conges", congeRouter);
-app.use("/api/employes", employeRouter);
+app.use("/api/employees", employeRouter);
 app.use("/api/users", userRouter);
-app.use("/api/rh", rhRouter);
+app.use("/api/rhs", rhRouter);
 
 // Try to Start the Server
 const start = async () => {

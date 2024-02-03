@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Rhs = require('../controllers/Rh.controller');
-router.post('/rh', Rhs.create);
-router.get('/rhs', Rhs.findAll);
-router.get('/rhs/:RhId', Rhs.findOne);
-router.put('/rhs/:RhId', Rhs.update);
-router.delete('/rhs/:RhId', Rhs.delete);
+router.post('/', Rhs.create);
+router.get('/', Rhs.findAll);
+router.get('/:RhId', Rhs.findOne);
+router.put('/:RhId', Rhs.update);
+router.delete('/:RhId', Rhs.delete);
 module.exports = router;

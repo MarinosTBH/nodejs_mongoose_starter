@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 const users = require('../controllers/user.controller');
-app.post('/users', users.create);
-app.get('/users', users.findAll);
-app.get('/users/:userId', users.findOne);
-app.put('/users/:userId', users.update);
-app.delete('/users/:userId', users.delete);
+app.post('/', users.create);
+app.get('/', users.findAll);
+app.get('/:userId', users.findOne);
+app.put('/:userId', users.update);
+app.delete('/:userId', users.delete);
 module.exports = app;
